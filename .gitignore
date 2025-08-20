@@ -1,0 +1,13 @@
+# dependencies
+node_modules/
+npm-debug.log*
+
+# environment files
+.env
+
+# production build
+/dist
+/build
+
+# uploads
+uploads/
