@@ -1,0 +1,9 @@
+export { default as AdminHomeLayout } from "./AdminHomeLayout";
+export { default as Admin } from "./Admin";
+export { default as AdminSignIn } from "./AdminSignIn";
+export { default as AddDoctor } from "./AddDoctor";
+export { default as AllAppointments } from "./AllAppointments";
+export { default as AdminDashboard } from "./AdminDashboard";
+export { default as DoctorsList } from "./DoctorsList";
+export { default as AdminSidebar } from "./AdminSidebar";
+export { default as AdminNavbar } from "./AdminNavbar";

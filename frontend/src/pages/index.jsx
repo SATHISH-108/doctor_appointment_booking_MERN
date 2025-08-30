@@ -1,0 +1,11 @@
+export { default as HomeLayout } from "./HomeLayout";
+export { default as LandingPage } from "./LandingPage";
+export { default as About } from "./About";
+export { default as Doctors } from "./Doctors";
+export { default as Contact } from "./Contact";
+export { default as SignIn } from "./SignIn";
+export { default as Register } from "./Register";
+export { default as Error } from "./Error";
+export { default as MyProfile } from "./MyProfile";
+export { default as MyAppointments } from "./MyAppointments";
+export { default as Appointment } from "./Appointment";
