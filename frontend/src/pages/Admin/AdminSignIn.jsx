@@ -26,9 +26,9 @@ const AdminSignIn = () => {
       // console.log("adminSignIn_data", data);
       if (data.data.success) {
         const adminToken = data.data.adminToken;
-        // ✅ Save raw token (no JSON.stringify)
+        // Save raw token (no JSON.stringify)
         localStorage.setItem("adminToken", adminToken);
-        // ✅ Update Redux
+        // Update Redux
         dispatch(setadminToken(adminToken));
         toast.success(data.data.message);
         navigate("/admin-dashboard");

@@ -1,5 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { ProtectedRouteAdmin, ProtectedRouteDoctor } from "./components/index";
+import {
+  ProtectedRouteAdmin,
+  ProtectedRouteDoctor,
+  ProtectedRoutePatient,
+} from "./components/index";
 import {
   HomeLayout,
   LandingPage,
@@ -15,7 +19,6 @@ import {
 import {
   AdminHomeLayout,
   AddDoctor,
-  Admin,
   AdminSignIn,
   AllAppointments,
   AdminDashboard,
@@ -38,17 +41,21 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <LandingPage />, errorElement: <Error /> },
       { path: "/about", element: <About /> },
-      {
-        path: "/doctors",
-        element: <Doctors />,
-      },
+      { path: "/doctors", element: <Doctors /> },
       { path: "/doctors/:speciality", element: <Doctors /> },
       { path: "/contact", element: <Contact /> },
-      { path: "/my-profile", element: <MyProfile /> },
-      { path: "/appointment/:docId", element: <Appointment /> },
+
+      // Protected patient routes inside wrapper
+      {
+        element: <ProtectedRoutePatient />,
+        children: [
+          { path: "/my-profile", element: <MyProfile /> },
+          { path: "/appointment/:docId", element: <Appointment /> },
+          { path: "/my-appointments", element: <MyAppointments /> },
+        ],
+      },
     ],
   },
-  { path: "/my-appointments", element: <MyAppointments /> },
   { path: "/signin", element: <SignIn />, errorElement: <Error /> },
 
   // Doctor Routes (Protected)

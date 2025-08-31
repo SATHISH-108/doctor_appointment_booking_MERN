@@ -72,10 +72,10 @@ const registerUser = async (request, response) => {
     const user = await newUser.save();
     //const users= await UserModel.create(userProfileData)
     // console.log("registeredUser", user);
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const patientToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     response.json({
       success: true,
-      token,
+      patientToken,
       message: "User Registered Successfully",
     });
   } catch (error) {
@@ -96,10 +96,10 @@ const loginUser = async (request, response) => {
     const isMatch = await bcrypt.compare(password, user.password);
     // console.log("isMatch", isMatch);
     if (isMatch) {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      const patientToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       return response.json({
         success: true,
-        token,
+        patientToken,
         loginUser: user,
         message: "User Login Successfully",
       });
@@ -139,23 +139,6 @@ const updatedProfile = async (request, response) => {
         message: "All Fields Are Required",
       });
     }
-    // await UserModel.findByIdAndUpdate(userId, {
-    //   name,
-    //   phone,
-    //   address: JSON.parse(address),
-    //   dob,
-    //   gender,
-    // });
-    // if (imageFile) {
-    //   //upload image to cloudinary
-    //   const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-    //     resource_type: "image",
-    //   });
-    //   const imageURL = imageUpload.secure_url;
-    //   //save this imageURL in the users data
-    //   await UserModel.findByIdAndUpdate(userId, { image: imageURL });
-    // }
-    // response.json({ success: true, message: "Profile Updated" });
 
     const updateData = {
       name,
@@ -190,83 +173,16 @@ const updatedProfile = async (request, response) => {
     response.status(500).json({ success: false, message: error.message });
   }
 };
-//API to book appointment
-// const bookAppointment = async (request, response) => {
-//   try {
-//     const { userId } = request;
-//     const { docId, slotDate, slotTime } = request.body;
-//     // console.log("userId_bookAppointment", userId); //6894cf526cd34b03f7bc2277
-//     //console.log("bookAppointments_docId", docId); //6883dd20dd6fbf0734c53a42
-//     //console.log("bookAppointments_slotdate", slotDate); //20_8_2025
-//     //console.log("bookAppointments_slotdate", slotTime); // 11:00 AM
-//     const docData = await DoctorModel.findById(docId).select("-password");
-//     //console.log("bookAppointment_docData", docData);
-//     //     bookAppointment_docData {
-//     //   address: { line1: '37th Cross, Richmond', line2: 'Circle, Ring Road, London' },
-//     //   _id: new ObjectId('6883dd20dd6fbf0734c53a42'),
-//     //   name: 'Dr. Sarah Patel',
-//     //   email: 'sarah.patel@prescripto.com',
-//     //   image: 'https://res.cloudinary.com/dvpd8pzkl/image/upload/v1753472290/vjwai0b88tjmondefnkl.png',
-//     //   speciality: 'Dermatologist',
-//     //   degree: 'MBBS',
-//     //   experience: '1 Year',
-//     //   about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies',
-//     //   available: true,
-//     //   fees: 200,
-//     //   date: 1753472288895,
-//     //   slots_booked: [],
-//     //   createdAt: 2025-07-25T19:38:08.898Z,
-//     //   updatedAt: 2025-08-13T12:09:45.733Z,
-//     //   __v: 0
-//     // }
-//     if (!docData.available) {
-//       return response.json({ success: false, message: "Doctor not available" });
-//     }
-//     let slots_booked = docData.slots_booked;
-//     //checking for slot availablity
-//     if (slots_booked[slotDate]) {
-//       if (slots_booked[slotDate].includes(slotTime)) {
-//         return response.json({
-//           success: false,
-//           message: "Slot not available",
-//         });
-//       } else {
-//         slots_booked[slotDate].push(slotTime);
-//       }
-//     } else {
-//       slots_booked[slotDate] = [];
-//       slots_booked[slotDate].push(slotTime);
-//     }
-//     const userData = await UserModel.findById(userId).select("-password");
-//     //deleting the slots_booked data from doctorData
-//     delete docData.slots_booked;
-//     const appointmentData = {
-//       userId,
-//       docId,
-//       userData,
-//       docData,
-//       amount: docData.fees,
-//       slotTime,
-//       slotDate,
-//       date: Date.now(),
-//     };
-//     //saving the appointments into Database
-//     // const newAppointment = new appointModel(appointmentData);
-//     // await newAppointment.save();
-//     await AppointmentModel.create(appointmentData);
-//     //save new slots data in docData
-//     await DoctorModel.findByIdAndUpdate(docId, { slots_booked });
-//     response.json({ success: true, message: "Appointment Booked" });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
 
 // API to book appointment
 const bookAppointment = async (request, response) => {
   try {
     const { userId } = request; // from authUser middleware
     const { docId, slotDate, slotTime } = request.body;
+    console.log("userId", userId);
+    console.log("docId", docId);
+    console.log("slotDate", slotDate);
+    console.log("slotTime", slotTime);
     if (!docId || !slotDate || !slotTime) {
       return response.json({
         success: false,
@@ -343,7 +259,7 @@ const bookAppointment = async (request, response) => {
     // 8.Add slot to doctor’s slots_booked
     slots_booked[slotDate].push(slotTime);
     const slots = await DoctorModel.findByIdAndUpdate(docId, { slots_booked });
-    // console.log("slots", slots);
+    console.log("slots", slots);
 
     //     slots {
     //   address: { line1: '37th Cross, Richmond', line2: 'Circle, Ring Road, London' },
@@ -422,6 +338,7 @@ const cancelAppointment = async (request, response) => {
 
     await AppointmentModel.findByIdAndUpdate(appointmentId, {
       cancelled: true,
+      cancelledAt: new Date(),
     });
 
     // releasing doctor slot

@@ -7,3 +7,4 @@ export { default as Footer } from "./Footer";
 export { default as RelatedDoctors } from "./RelatedDoctors";
 export { default as ProtectedRouteAdmin } from "./ProtectedRouteAdmin";
 export { default as ProtectedRouteDoctor } from "./ProtectedRouteDoctor";
+export { default as ProtectedRoutePatient } from "./ProtectedRoutePatient";

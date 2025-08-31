@@ -149,7 +149,6 @@ const Doctors = () => {
                   src={image}
                   alt="top-doctors-image"
                   className="bg-blue-50 "
-                  a
                 />
                 <div className="p-4">
                   <div

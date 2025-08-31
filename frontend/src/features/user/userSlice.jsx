@@ -4,8 +4,8 @@ import axios from "axios";
 const initialState = {
   currencySymbol: "$",
   backendUrl: import.meta.env.VITE_BACKEND_URL,
-  token: localStorage.getItem("token")
-    ? JSON.parse(localStorage.getItem("token"))
+  patientToken: localStorage.getItem("patientToken")
+    ? localStorage.getItem("patientToken")
     : false,
   userProfileData: null,
   loading: false,
@@ -49,11 +49,13 @@ export const getUserProfile = createAsyncThunk(
   "getProfile",
   async (name, thunkAPI) => {
     const state = thunkAPI.getState();
-    const { token, backendUrl } = state.user;
+    const { patientToken, backendUrl } = state.user;
     try {
-      let { data } = await axios.get(`${backendUrl}/api/user/get-profile`, {
-        headers: { token },
-      });
+      let { data } = await axios.get(
+        `${backendUrl}/api/user/get-profile`,
+        // {headers: { patientToken }}
+        { headers: { Authorization: `Bearer ${patientToken}` } }
+      );
       return data;
     } catch (error) {
       console.log(error);
@@ -76,16 +78,15 @@ export const getDoctorsData = createAsyncThunk(
     // console.log(name)
     // console.log(thunkAPI)
     try {
-      // Get the token from admin slice
       const state = thunkAPI.getState();
-      const { token, backendUrl } = state.user;
+      const { patientToken, backendUrl } = state.user;
       // Call backend API
       //when we are doing fetching data make sure no body, only headers should maintain
       const response = await axios.get(`${backendUrl}/api/doctor/list`, {
-        headers: { token },
+        headers: { patientToken },
       });
       // Return doctors list
-      console.log("response_userSlice_getDoctorsData_88", response);
+      // console.log("response_userSlice_getDoctorsData", response);
       return response.data.doctors;
     } catch (error) {
       console.error("Axios error:", error.response || error.message);
@@ -99,13 +100,13 @@ const user = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setToken: (state, action) => {
-      // console.log("setToken_user_slice", action);
-      state.token = action.payload;
+    setPatientToken: (state, action) => {
+      // console.log("setPatientToken_user_slice", action);
+      state.patientToken = action.payload;
     },
     logout: (state) => {
-      localStorage.removeItem("token");
-      state.token = false;
+      localStorage.removeItem("patientToken");
+      state.patientToken = false;
       state.userProfileData = null;
     },
   },
@@ -129,11 +130,10 @@ const user = createSlice({
         toast.error(action.payload);
       })
       .addCase(getDoctorsData.fulfilled, (state, action) => {
-        console.log("getDoctorsData_action.payload", action.payload);
         state.loading = false;
         state.doctorsList = action.payload;
       });
   },
 });
 export default user.reducer;
-export const { setToken, logout } = user.actions;
+export const { setPatientToken, logout } = user.actions;

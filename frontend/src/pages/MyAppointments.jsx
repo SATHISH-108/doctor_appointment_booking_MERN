@@ -1,5 +1,4 @@
 import { useSelector, useDispatch } from "react-redux";
-import { Navbar } from "../components";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -9,24 +8,25 @@ import { useNavigate } from "react-router-dom";
 
 const MyAppointments = () => {
   const { doctorsList } = useSelector((state) => state.admin);
-  const { backendUrl, token } = useSelector((state) => state.user);
+  const { backendUrl, patientToken } = useSelector((state) => state.user);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const getUserAppointments = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/api/user/appointments`, {
-        headers: { token },
-      });
+      const response = await axios.get(
+        `${backendUrl}/api/user/appointments`,
+        // {headers: { patientToken }}
+        { headers: { Authorization: `Bearer ${patientToken}` } }
+      );
       // const {data} = await axios.get(`${backendUrl}/api/user/appointments`, {
-      //   headers: {token},
+      //   headers: {patientToken},
       // });
       // console.log("response_getUserAppointments", response);
       if (response.data.success) {
         setLoading(false);
         setAppointments(response.data.appointments.reverse());
-        console.log(response.data.appointments);
       }
     } catch (error) {
       console.log(error);
@@ -40,7 +40,7 @@ const MyAppointments = () => {
       const response = await axios.post(
         `${backendUrl}/api/user/cancel-appointment`,
         { appointmentId },
-        { headers: { token } }
+        { headers: { patientToken } }
       );
       // console.log("response_cancelAppointment", response);
       // console.log("appointmentId", appointmentId);
@@ -74,7 +74,7 @@ const MyAppointments = () => {
           const { data } = await axios.post(
             `${backendUrl}/api/user/verify-razorpay`,
             { razorpay_order_id },
-            { headers: { token } }
+            { headers: { patientToken } }
           );
           console.log("data_initPay", data);
           if (data.success) {
@@ -96,7 +96,7 @@ const MyAppointments = () => {
       const { data } = await axios.post(
         `${backendUrl}/api/user/payment-razorpay`,
         { appointmentId },
-        { headers: { token } }
+        { headers: { patientToken } }
       );
       // console.log("data_appointmentRazorpay", data);
       if (data.success) {
@@ -112,13 +112,12 @@ const MyAppointments = () => {
   };
 
   useEffect(() => {
-    if (token) {
+    if (patientToken) {
       getUserAppointments();
     }
-  }, [token]);
+  }, [patientToken]);
   return (
     <div>
-      <Navbar />
       <p className="pb-3 mt-12 font-medium text-zinc-700 border-b">
         My-appointments
       </p>

@@ -196,7 +196,7 @@ export const getDoctorsData = createAsyncThunk(
     // console.log(name)
     // console.log(thunkAPI)
     try {
-      // Get the token from admin slice
+      // Get the doctorToken from doctor slice
       const state = thunkAPI.getState();
       const { doctorToken } = state.doctor;
       // Call backend API
@@ -214,30 +214,9 @@ export const getDoctorsData = createAsyncThunk(
   }
 );
 
-// // Async thunk for logging out doctor
-// export const logoutAndRemoveDoctorToken = createAsyncThunk(
-//   "doctor/logout",
-//   async (_, thunkAPI) => {
-//     try {
-//       // remove from localStorage
-//       localStorage.removeItem("doctorToken");
-
-//       // clear redux state
-//       thunkAPI.dispatch(setDoctorToken("")); // clear redux
-//       // thunkAPI.dispatch(logoutDoctor());
-
-//       toast.success("Doctor logged out successfully!");
-//       return true;
-//     } catch (error) {
-//       toast.error("Failed to logout doctor");
-//       return thunkAPI.rejectWithValue(error.message);
-//     }
-//   }
-// );
-
 export const logoutDoctor = createAsyncThunk(
   "doctor/logout",
-  async (_, thunkAPI) => {
+  async (name, thunkAPI) => {
     localStorage.removeItem("doctorToken");
     // thunkAPI.dispatch(setDoctorToken(""));
     return true;

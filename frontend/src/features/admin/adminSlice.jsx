@@ -148,27 +148,6 @@ export const getDashboardData = createAsyncThunk(
     }
   }
 );
-// // ✅ Thunk for logging out admin (and also clear doctorToken if exists)
-// export const logoutAll = createAsyncThunk(
-//   "logoutAll",
-//   async (name, thunkAPI) => {
-//     const state = thunkAPI.getState();
-//     const { adminToken } = state.admin;
-//     const { doctorToken } = state.doctor;
-
-//     // remove tokens from localStorage
-//     if (adminToken) localStorage.removeItem("adminToken");
-//     if (doctorToken) localStorage.removeItem("doctorToken");
-
-//     // clear tokens in redux
-//     thunkAPI.dispatch(logoutAdmin());
-//     thunkAPI.dispatch(setadminToken());
-//     thunkAPI.dispatch(setDoctorToken(""));
-
-//     toast.success("Admin & Doctor Logged out successfully!");
-//     return true;
-//   }
-// );
 export const logoutAdmin = createAsyncThunk(
   "admin/logout",
   async (name, thunkAPI) => {
@@ -177,7 +156,7 @@ export const logoutAdmin = createAsyncThunk(
     return true;
   }
 );
-
+//Logout (Admin+Doctor)
 export const logoutAll = createAsyncThunk(
   "auth/logoutAll",
   async (_, thunkAPI) => {
@@ -210,7 +189,7 @@ const adminSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchDoctors.fulfilled, (state, action) => {
-        console.log("fetchDoctors", action);
+        // console.log("fetchDoctors", action);
         state.loading = false;
         state.doctorsList = action.payload || [];
       })

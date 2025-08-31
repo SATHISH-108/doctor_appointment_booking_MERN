@@ -10,6 +10,7 @@ const DoctorSignIn = () => {
     password: "",
   });
   const { backendUrl } = useSelector((state) => state.doctor);
+  const { adminToken } = useSelector((state) => state.admin);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const submitHandler = async (e) => {
@@ -24,9 +25,9 @@ const DoctorSignIn = () => {
       // data:{doctorToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ODNkY2MxZGQ2ZmJmMDczNGM1M2E0MCIsImlhdCI6MTc1NjEzNDQ5OH0.J-jyiJF3rNhJY6Fdkn8xdiISglvORqPOnMvBew-GdsA";
       // message: "Doctor Login Successfully" success: true};
       if (response.data.success) {
-        // ✅ Save token as RAW string (no JSON.stringify)
+        //  Save doctorToken as RAW string (no JSON.stringify)
         localStorage.setItem("doctorToken", response.data.doctorToken);
-        // ✅ Update Redux
+        //  Update Redux
         dispatch(setDoctorToken(response.data.doctorToken));
 
         toast.success(response.data.message);
@@ -89,7 +90,14 @@ const DoctorSignIn = () => {
           Admin Login
           <span
             className="text-primary underline cursor-pointer"
-            onClick={() => navigate("/admin/signin")}
+            onClick={() => {
+              if (adminToken) {
+              }
+              navigate("/admin-dashboard");
+              if (!adminToken) {
+                navigate("/admin/signin");
+              }
+            }}
           >
             Click here
           </span>

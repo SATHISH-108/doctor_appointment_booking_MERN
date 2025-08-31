@@ -16,7 +16,7 @@ const MyProfile = () => {
   //   dob: "2000-01-20",
   // });
   const [isEdit, setIsEdit] = useState(false);
-  const { userProfileData, token, loading } = useSelector(
+  const { userProfileData, patientToken, loading } = useSelector(
     (state) => state.user
   );
   const dispatch = useDispatch();
@@ -26,7 +26,7 @@ const MyProfile = () => {
     if (!userProfileData) {
       dispatch(getUserProfile());
     }
-  }, [dispatch, userProfileData, token]);
+  }, [dispatch, userProfileData, patientToken]);
   if (loading) return <p>Loading profile...</p>;
   if (!userProfileData) return <p>No profile data found</p>;
   return (

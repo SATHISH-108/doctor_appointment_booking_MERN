@@ -3,7 +3,7 @@ import { Navbar } from "../components/index";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { getUserProfile, setToken } from "../features/user/userSlice";
+import { getUserProfile, setPatientToken } from "../features/user/userSlice";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +18,7 @@ const SignIn = () => {
     dob: "",
     address: { line1: "", line2: "" },
   });
-  const { backendUrl, token } = useSelector((state) => state.user);
+  const { backendUrl, patientToken } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -33,8 +33,8 @@ const SignIn = () => {
         );
         // console.log("response", response);
         if (response.data.success) {
-          localStorage.setItem("token", JSON.stringify(response.data.token));
-          dispatch(setToken(response.data.token));
+          localStorage.setItem("patientToken", response.data.patientToken);
+          dispatch(setPatientToken(response.data.patientToken));
           toast.success(response.data.message);
           setUser({ ...user, name: "", email: "", password: "" });
           setState("Sign In");
@@ -50,8 +50,8 @@ const SignIn = () => {
         });
         // console.log("data", data);
         if (data.success) {
-          localStorage.setItem("token", JSON.stringify(data.token));
-          dispatch(setToken(data.token));
+          localStorage.setItem("patientToken", data.patientToken);
+          dispatch(setPatientToken(data.patientToken));
           dispatch(getUserProfile(data.loginUser));
           toast.success(data.message);
           setUser({ ...user, email: "", password: "" });
@@ -65,10 +65,10 @@ const SignIn = () => {
     }
   };
   useEffect(() => {
-    if (state === "Sign In" && token) {
+    if (state === "Sign In" && patientToken) {
       navigate("/");
     }
-  }, [token]);
+  }, [patientToken]);
   return (
     <div>
       <Navbar />

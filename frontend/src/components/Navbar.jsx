@@ -7,12 +7,12 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
-  //if we have token it means loggedin
-  //if we don't have token it means loggedout
-  const { token, userProfileData } = useSelector((state) => state.user);
+  //if we have patientToken it means loggedin
+  //if we don't have patientToken it means loggedout
+  const { patientToken, userProfileData } = useSelector((state) => state.user);
   useEffect(() => {
     dispatch(getUserProfile());
-  }, [dispatch, token]);
+  }, [dispatch, patientToken]);
   return (
     <div className="flex items-center justify-between py-3 border-b border-b-gray-400">
       <div onClick={() => navigate("/")}>
@@ -46,7 +46,7 @@ const Navbar = () => {
         </NavLink>
       </div>
       <div className="flex items-center gap-4">
-        {token ? (
+        {patientToken ? (
           <div className="flex items-center gap-2 cursor-pointer group relative">
             {userProfileData && (
               <p className="font-semibold">
@@ -77,7 +77,7 @@ const Navbar = () => {
                 <p
                   onClick={() => {
                     dispatch(logout());
-                    navigate("/signin");
+                    navigate("/signin", { replace: true }); // ✅ replace prevents back navigation
                   }}
                   className="hover:text-black cursor-pointer"
                 >

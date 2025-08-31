@@ -7,13 +7,12 @@ const TopDoctors = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { adminToken } = useSelector((state) => state.admin);
-  const { token, doctorsList } = useSelector((state) => state.user);
-  console.log("doctorsList_TopDoctors", doctorsList);
+  const { patientToken, doctorsList } = useSelector((state) => state.user);
   useEffect(() => {
-    if (doctorsList.length === 0) {
+    if (!doctorsList || doctorsList.length === 0) {
       dispatch(getDoctorsData());
     }
-  }, [adminToken, dispatch, doctorsList.length, token]);
+  }, [adminToken, dispatch, doctorsList?.length, patientToken]);
   return (
     <div className="flex flex-col items-center gap-4 my-16 text-gray-900 md:mx-10">
       <h1 className="text-3xl font-medium">Top Doctors to Book</h1>
@@ -21,7 +20,7 @@ const TopDoctors = () => {
         Simply browse through our extensive list of trusted doctors.
       </p>
       <div className="w-full grid grid-cols-auto gap-5 pt-5 gap-y-6 px-3 sm:px-0">
-        {doctorsList.slice(0, 10).map((item, index) => {
+        {(doctorsList || []).slice(0, 10).map((item, index) => {
           const {
             _id,
             name,

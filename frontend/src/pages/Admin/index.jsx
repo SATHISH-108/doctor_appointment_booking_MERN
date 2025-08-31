@@ -1,5 +1,4 @@
 export { default as AdminHomeLayout } from "./AdminHomeLayout";
-export { default as Admin } from "./Admin";
 export { default as AdminSignIn } from "./AdminSignIn";
 export { default as AddDoctor } from "./AddDoctor";
 export { default as AllAppointments } from "./AllAppointments";
