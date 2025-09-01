@@ -6,7 +6,7 @@ const initialState = {
   doctorsList: [],
   doctorToken: localStorage.getItem("doctorToken")
     ? localStorage.getItem("doctorToken")
-    : "", // ✅ raw string
+    : "", //  raw string
   appointments: [],
   doctorDashboardData: false,
   doctorProfileData: false,
@@ -33,10 +33,9 @@ export const doctorUpdateProfile = createAsyncThunk(
         `${backendUrl}/api/doctor/update-profile`,
         updateData,
         {
-          headers: { doctorToken },
+          headers: { Authorization: `Bearer ${doctorToken}` },
         }
       );
-      console.log("response_doctorUpdateProfile", response);
       if (response.data.success) {
         // toast.success(response.data.message || "Profile Updated");
         toast.success(response.data.message);
@@ -61,9 +60,9 @@ export const getDoctorProfileData = createAsyncThunk(
       const state = thunkAPI.getState();
       const { doctorToken } = state.doctor;
       let response = await axios.get(`${backendUrl}/api/doctor/profile`, {
-        headers: { doctorToken },
+        headers: { Authorization: `Bearer ${doctorToken}` },
       });
-      // console.log("response_getDoctorProfileData_doctorSlice", response);
+
       if (response.data.success) {
         toast.success(response.data.message);
         return response.data.profileData;
@@ -86,9 +85,9 @@ export const getDashboardData = createAsyncThunk(
       const state = thunkAPI.getState();
       const { doctorToken } = state.doctor;
       let response = await axios.get(`${backendUrl}/api/doctor/dashboard`, {
-        headers: { doctorToken },
+        headers: { Authorization: `Bearer ${doctorToken}` },
       });
-      // console.log("response_getDashboardData_29", response);
+
       if (response.data.success) {
         toast.success(response.data.message);
         return response.data.doctorDashboardData;
@@ -108,17 +107,14 @@ export const completeAppointment = createAsyncThunk(
     try {
       const state = thunkAPI.getState();
       const { doctorToken } = state.doctor;
-      // console.log(
-      //   "appointmentId_completeAppointment_doctorSlice",
-      //   appointmentId,
-      //   docId
-      // );
       let response = await axios.post(
         `${backendUrl}/api/doctor/complete-appointment`,
         { appointmentId, docId },
-        { headers: { doctorToken } }
+        {
+          headers: { Authorization: `Bearer ${doctorToken}` },
+        }
       );
-      // console.log("response_completeAppointment", response);
+
       if (response.data.success) {
         toast.success(response.data.message);
         thunkAPI.dispatch(getAppointments());
@@ -137,19 +133,15 @@ export const cancelAppointment = createAsyncThunk(
   "doctor/cancelAppointment", // unique name
   async ({ appointmentId, docId }, thunkAPI) => {
     try {
-      // console.log(
-      //   "appointmentId_cancelAppointment_doctorSlice",
-      //   appointmentId,
-      //   docId
-      // );
       const state = thunkAPI.getState();
       const { doctorToken } = state.doctor;
       let response = await axios.post(
         `${backendUrl}/api/doctor/cancel-appointment`,
         { appointmentId, docId },
-        { headers: { doctorToken } }
+        {
+          headers: { Authorization: `Bearer ${doctorToken}` },
+        }
       );
-      // console.log("response_completeAppointment", response);
       if (response.data.success) {
         toast.success(response.data.message);
         thunkAPI.dispatch(getAppointments());
@@ -172,9 +164,8 @@ export const getAppointments = createAsyncThunk(
     const { doctorToken } = state.doctor;
     try {
       let response = await axios.get(`${backendUrl}/api/doctor/appointments`, {
-        headers: { doctorToken },
+        headers: { Authorization: `Bearer ${doctorToken}` },
       });
-      // console.log("response_getAppointments_doctorSlice", response);
       if (response.data.success) {
         toast.success(response.data.message);
         return response.data.appointments;
@@ -202,7 +193,7 @@ export const getDoctorsData = createAsyncThunk(
       // Call backend API
       //when we are doing fetching data make sure no body, only headers should maintain
       const response = await axios.get(`${backendUrl}/api/doctor/list`, {
-        headers: { doctorToken },
+        headers: { Authorization: `Bearer ${doctorToken}` },
       });
       // Return doctors list
       return response.data.doctors;
@@ -244,10 +235,6 @@ const doctorSlice = createSlice({
       //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ODNkY2MxZGQ2ZmJmMDczNGM1M2E0MCIsImlhdCI6MTc1NjEyOTUwOX0.mO-msfXkJC_yg5KWHBiBXO3l5uItY1KHWhpVHN5GWHg
       state.doctorToken = action.payload;
     },
-    // logoutDoctor: (state) => {
-    //   state.doctorToken = "";
-    //   localStorage.removeItem("doctorToken");
-    // },
     setIsEdit: (state, action) => {
       state.isEdit = action.payload;
     },
@@ -283,20 +270,17 @@ const doctorSlice = createSlice({
       .addCase(getDoctorsData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
-        console.error("Fetch Doctors Error:", action.error);
       })
       .addCase(getAppointments.fulfilled, (state, action) => {
-        // console.log("action.payload_getAppointments_91", action.payload);
         state.appointments = action.payload;
       })
       .addCase(completeAppointment.fulfilled, (state, action) => {
-        console.log("action.payload_completeAppointment", action.payload);
+        // console.log("action.payload_completeAppointment", action.payload);
       })
       .addCase(cancelAppointment.fulfilled, (state, action) => {
-        console.log("action.payload_cancelAppointment", action.payload);
+        // console.log("action.payload_cancelAppointment", action.payload);
       })
       .addCase(getDashboardData.fulfilled, (state, action) => {
-        // console.log("action.payload_getDashboardData", action.payload);
         state.doctorDashboardData = action.payload;
       })
       .addCase(getDoctorProfileData.fulfilled, (state, action) => {
@@ -322,5 +306,4 @@ export const {
   setIsEdit,
   updateDoctorProfileField,
   updateDoctorProfileAddress,
-  // logoutDoctor,
 } = doctorSlice.actions;

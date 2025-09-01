@@ -9,7 +9,6 @@ const doctorList = async (request, response) => {
     //excluding with email, password means not show in the json parse data.
     const doctors = await DoctorModel.find({}).select(["-email", "-password"]);
     response.json({ success: true, doctors });
-    // console.log("doctors_doctorController", doctors);
   } catch (error) {
     console.log(error);
     response.json({ success: false, message: error.message });
@@ -20,7 +19,6 @@ const signInDoctor = async (request, response) => {
   try {
     const { email, password } = request.body;
     const doctor = await DoctorModel.findOne({ email });
-    // console.log("doctor_signInDoctor_38_doctorController", doctor);
     if (!doctor) {
       return response.json({ success: false, message: "Invalid credentials" });
     }
@@ -32,11 +30,6 @@ const signInDoctor = async (request, response) => {
 
     if (isMatch) {
       const doctorToken = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET);
-      // console.log(
-      //   "doctorToken_signInDoctor_46_doctorController",
-      //   doctorToken,
-      //   doctor
-      // );
       return response.json({
         success: true,
         doctorToken,
@@ -54,12 +47,10 @@ const signInDoctor = async (request, response) => {
 //API to get doctor appointments for doctor panel
 const appointmentsDoctor = async (request, response) => {
   try {
-    // console.log("request_appointmentsDoctor_doctorController", request);
     const docId = request.doctorId;
     // console.log("appointmentsDoctor_docId_doctorController_70", docId); //6884e3426944cd531c6f2e8c
     const appointments = await AppointmentModel.find({ docId });
     // console.log("appointments_appointmentsDoctor", appointments);
-
     //     appointments_appointmentsDoctor [
     //   {
     //     _id: new ObjectId('68aad853d852f39c7396822d'),
@@ -213,7 +204,6 @@ const appointmentCancel = async (request, response) => {
 const doctorDashboard = async (request, response) => {
   try {
     const docId = request.doctorId; // comes from authDoctor middleware
-    // console.log("request.doctorId", request.doctorId);
     const appointments = await AppointmentModel.find({ docId });
     let earnings = 0;
     appointments.map((item) => {

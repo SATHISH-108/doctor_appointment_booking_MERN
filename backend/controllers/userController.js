@@ -13,7 +13,6 @@ import { request } from "express";
 const registerUser = async (request, response) => {
   try {
     const { name, email, password, phone, gender, dob, address } = request.body;
-    // console.log("request.body", request.body);
     if (
       !name ||
       !email ||
@@ -65,9 +64,7 @@ const registerUser = async (request, response) => {
       dob,
       address,
     };
-    // console.log("userProfileData", userProfileData);
 
-    // console.log("user");
     const newUser = new UserModel(userProfileData);
     const user = await newUser.save();
     //const users= await UserModel.create(userProfileData)
@@ -88,13 +85,11 @@ const loginUser = async (request, response) => {
   try {
     const { email, password } = request.body;
     const user = await UserModel.findOne({ email });
-    // console.log("user_userController", user);
     if (!user) {
       return response.json({ success: false, message: "User does not exist" });
     }
     //Converting normal password into bcryprt password
     const isMatch = await bcrypt.compare(password, user.password);
-    // console.log("isMatch", isMatch);
     if (isMatch) {
       const patientToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       return response.json({
@@ -113,12 +108,11 @@ const loginUser = async (request, response) => {
 //API to get user profile data
 const getProfile = async (request, response) => {
   try {
-    // console.log("request_getProfile", request);
     const userId = request.userId; //userId: '6891d120f1e733cd84e543b3',=> It came from users(collection) userModel
     const userProfileData = await UserModel.findById(userId).select(
       "-password"
     );
-    // console.log("userProfileData_getProfile", userProfileData);
+
     response.json({ success: true, userProfileData });
   } catch (error) {
     console.log(error);
@@ -150,19 +144,16 @@ const updatedProfile = async (request, response) => {
     };
     // Handle image upload if file exists
     if (imageFile) {
-      // console.log("Uploading image to Cloudinary...");
       const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
         resource_type: "image",
       });
       updateData.image = imageUpload.secure_url;
-      // console.log("Uploaded image URL:", imageUpload.secure_url);
     }
 
     // Only one update to MongoDB
     const updatedUser = await UserModel.findByIdAndUpdate(userId, updateData, {
       new: true,
     }).select("-password"); // Exclude password from response
-    // console.log("updatedUser", updatedUser);
     response.status(200).json({
       success: true,
       message: "Profile Updated",
@@ -179,10 +170,6 @@ const bookAppointment = async (request, response) => {
   try {
     const { userId } = request; // from authUser middleware
     const { docId, slotDate, slotTime } = request.body;
-    console.log("userId", userId);
-    console.log("docId", docId);
-    console.log("slotDate", slotDate);
-    console.log("slotTime", slotTime);
     if (!docId || !slotDate || !slotTime) {
       return response.json({
         success: false,
@@ -298,7 +285,6 @@ const bookAppointment = async (request, response) => {
 // API to get user appointments for frotend my-appointments page
 const listAppointment = async (request, response) => {
   try {
-    // console.log("userId_listAppointment", request.userId);
     const { userId } = request;
     //find method is used to find the particular user (specific user)
     const appointments = await AppointmentModel.find({ userId });
@@ -313,8 +299,6 @@ const cancelAppointment = async (request, response) => {
   try {
     const { userId } = request; // added by authUser middleware
     const { appointmentId } = request.body; // comes from frontend body
-    // console.log("request.body_cancelAppointment", appointmentId);
-    // console.log("userId_cancelAppointment", userId);
 
     if (!appointmentId) {
       return response.json({
@@ -369,7 +353,6 @@ const paymentRazorpay = async (request, response) => {
     const { appointmentId } = request.body;
     const appointmentData = await AppointmentModel.findById(appointmentId);
     // console.log("paymentRazorpay_appointmentId", appointmentId); //68a366d1461ad2369240a5da
-    // console.log("appointmentData_paymentRazorpay", appointmentData);
     if (!appointmentData || appointmentData.cancelled) {
       return response.json({
         success: false,
@@ -384,7 +367,6 @@ const paymentRazorpay = async (request, response) => {
     };
     //creation of an order
     const order = await razorpayInstance.orders.create(options);
-    console.log("order", order);
     //     order { amount: 40000, amount_due: 40000, amount_paid: 0, attempts: 0, created_at: 1755613337, currency: 'INR', entity: 'order',
     //   id: 'order_R7DyY8NyAr9NJS',notes: [],offer_id: null,receipt: '68a366d1461ad2369240a5da', status: 'created' }
     return response.json({ success: true, order });
@@ -397,7 +379,6 @@ const verifyRazorpay = async (request, response) => {
   try {
     const { razorpay_order_id } = request.body;
     const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
-    console.log("orderInfo", orderInfo);
     //     orderInfo {
     //   id: 'order_R7GvEAKcSnzQtB',entity: 'order', amount: 20000, amount_paid: 20000, amount_due: 0,
     //     currency: 'INR',receipt: '68a364b65f6543882d85d6b8', offer_id: null, status: 'paid',  attempts: 1,

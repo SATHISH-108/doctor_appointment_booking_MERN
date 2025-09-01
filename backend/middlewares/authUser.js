@@ -38,6 +38,7 @@
 
 import jwt from "jsonwebtoken";
 
+// User (Patient) authentication middleware
 const authUser = async (req, res, next) => {
   try {
     // Expect header: Authorization: Bearer <token>
@@ -46,19 +47,22 @@ const authUser = async (req, res, next) => {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
-        message: "Invalid or missing patientToken. Please login again.",
+        message: "Invalid or missing patient token. Please login again.",
       });
     }
 
     const token = authHeader.split(" ")[1]; // Extract token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.userId = decoded.id; // attach userId to request
+    // Attach userId to request (from users collection)
+    req.userId = decoded.id;
+
     next();
   } catch (error) {
+    console.error("authUser_error:", error);
     return res.status(401).json({
       success: false,
-      message: "Unauthorized: Invalid token",
+      message: "Patient Authentication Failed",
     });
   }
 };

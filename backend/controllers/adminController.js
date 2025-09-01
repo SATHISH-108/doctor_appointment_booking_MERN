@@ -23,8 +23,6 @@ const addDoctor = async (request, response) => {
     } = request.body;
     const parsedAddress = JSON.parse(request.body.address);
     const image = request.file ? request.file.filename : null;
-    // console.log("doctor-info", request.body);
-    // console.log("doctor-image", request.file);
     //checking for all data to add doctor
     if (
       !name ||
@@ -110,7 +108,6 @@ const addDoctor = async (request, response) => {
 //API For Admin Login
 const AdminSignIn = async (request, response) => {
   try {
-    // console.log("adminController_request.body", request.body);
     const { email, password } = request.body;
     if (
       email === process.env.ADMIN_EMAIL &&
@@ -141,7 +138,6 @@ const AdminSignIn = async (request, response) => {
 //API to get all doctors list for admin panel'
 const allDoctors = async (request, response) => {
   try {
-    // console.log("allDoctors_adminController", request.body);
     //get all doctorsList from database excluding with password
     const doctors = await DoctorModel.find({}).select("-password");
     response.json({ success: true, doctors });
@@ -164,7 +160,6 @@ const changeAvailability = async (request, response) => {
       available: !doctorData.available,
     });
     // doctorDetails.save();
-    // console.log("doctorDetails_changeAvailability", doctorDetails);
     response.json({
       success: true,
       doctorDetails,

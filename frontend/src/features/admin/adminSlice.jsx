@@ -5,7 +5,7 @@ import { setDoctorToken } from "../doctors/doctorSlice";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL; //http://localhost:4000
 const initialState = {
-  adminToken: localStorage.getItem("adminToken") || "", // ✅ raw string now
+  adminToken: localStorage.getItem("adminToken") || "", // raw string now
   backendUrl,
   doctorsList: [],
   appointments: [],
@@ -29,13 +29,10 @@ export const fetchDoctors = createAsyncThunk(
       console.log("adminToken_fetchDoctors_adminSlice_28", adminToken);
       //adminToken: 'eyJhbGciOiJIUzI1NiJ9.YWRtaW5AcHJlc2NyaXB0by5jb21BZG1pbkA.xI5rT4IfPt4bHlpSDNW-bpNlY6x_oiquvukCE439-fA'
       // Call backend API
-      //when we are doing fetching data make sure no body, only headers should maintain
       const response = await axios.get(`${backendUrl}/api/admin/all-doctors`, {
-        headers: { adminToken },
-        // headers: { Authorization: `Bearer ${adminToken}` },
+        headers: { Authorization: `Bearer ${adminToken}` },
       });
-      // Return doctors list
-      console.log("adminSlice_response", response);
+
       return response.data.doctors;
     } catch (error) {
       console.error("Axios error:", error.response || error.message);
@@ -57,9 +54,8 @@ export const changeAvailability = createAsyncThunk(
       const response = await axios.post(
         `${backendUrl}/api/admin/change-availability`,
         { docId },
-        { headers: { adminToken } }
+        { headers: { Authorization: `Bearer ${adminToken}` } }
       );
-      // console.log("response_changeAvailability", response);
       if (response.data.success) {
         toast.success(response.data.message);
       }
@@ -78,9 +74,8 @@ export const getAllAppointments = createAsyncThunk(
       const state = thunkAPI.getState();
       const { adminToken, backendUrl } = state.admin;
       const response = await axios.get(`${backendUrl}/api/admin/appointments`, {
-        headers: { adminToken },
+        headers: { Authorization: `Bearer ${adminToken}` },
       });
-      // console.log("response_admin_getAllAppointments", response);
       if (response.data.success) {
         return response.data.appointments;
       }
@@ -90,6 +85,7 @@ export const getAllAppointments = createAsyncThunk(
     }
   }
 );
+//Cancel Appointment
 export const cancelAppointment = createAsyncThunk(
   "cancelAppointment",
   async (appointmentId, thunkAPI) => {
@@ -112,9 +108,8 @@ export const cancelAppointment = createAsyncThunk(
       let response = await axios.post(
         `${backendUrl}/api/admin/cancel-appointment`,
         { appointmentId },
-        { headers: { adminToken } }
+        { headers: { Authorization: `Bearer ${adminToken}` } }
       );
-      console.log("response_cancelAppointment", response);
 
       if (response.data.success) {
         toast.success(response.data.message);
@@ -127,6 +122,7 @@ export const cancelAppointment = createAsyncThunk(
     }
   }
 );
+//Get Dashboard Data
 export const getDashboardData = createAsyncThunk(
   "getDashboardData",
   async (name, thunkAPI) => {
@@ -134,12 +130,11 @@ export const getDashboardData = createAsyncThunk(
       const state = await thunkAPI.getState();
       const { adminToken } = state.admin;
       let response = await axios.get(`${backendUrl}/api/admin/dashboard`, {
-        headers: { adminToken },
+        headers: { Authorization: `Bearer ${adminToken}` },
       });
       if (response.data.success) {
         toast.success(response.data.message);
       }
-      // console.log("response", response);
       const { appointments, dashboardData, doctors, users } = response.data;
       return dashboardData;
     } catch (error) {
@@ -148,6 +143,7 @@ export const getDashboardData = createAsyncThunk(
     }
   }
 );
+//Logout (Admin)
 export const logoutAdmin = createAsyncThunk(
   "admin/logout",
   async (name, thunkAPI) => {
@@ -189,7 +185,6 @@ const adminSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchDoctors.fulfilled, (state, action) => {
-        // console.log("fetchDoctors", action);
         state.loading = false;
         state.doctorsList = action.payload || [];
       })
@@ -210,7 +205,6 @@ const adminSlice = createSlice({
         state.appointments = action.payload;
       })
       .addCase(cancelAppointment.fulfilled, (state, action) => {
-        console.log("action_cancelAppointment", action);
         const { appointmentId } = action.payload;
         state.appointments = state.appointments.filter(
           (appt) => appt._id !== appointmentId
@@ -230,7 +224,4 @@ const adminSlice = createSlice({
   },
 });
 export default adminSlice.reducer;
-export const {
-  setadminToken,
-  //  logoutAdmin
-} = adminSlice.actions;
+export const { setadminToken } = adminSlice.actions;

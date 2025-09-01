@@ -6,7 +6,7 @@ const initialState = {
   backendUrl: import.meta.env.VITE_BACKEND_URL,
   patientToken: localStorage.getItem("patientToken")
     ? localStorage.getItem("patientToken")
-    : false,
+    : "",
   userProfileData: null,
   loading: false,
   error: null,
@@ -51,11 +51,9 @@ export const getUserProfile = createAsyncThunk(
     const state = thunkAPI.getState();
     const { patientToken, backendUrl } = state.user;
     try {
-      let { data } = await axios.get(
-        `${backendUrl}/api/user/get-profile`,
-        // {headers: { patientToken }}
-        { headers: { Authorization: `Bearer ${patientToken}` } }
-      );
+      let { data } = await axios.get(`${backendUrl}/api/user/get-profile`, {
+        headers: { Authorization: `Bearer ${patientToken}` },
+      });
       return data;
     } catch (error) {
       console.log(error);
@@ -75,22 +73,16 @@ export const getDoctorsData = createAsyncThunk(
   "getDoctorsList",
   async (name, thunkAPI) => {
     //instead of name you can give any name
-    // console.log(name)
-    // console.log(thunkAPI)
     try {
       const state = thunkAPI.getState();
       const { patientToken, backendUrl } = state.user;
       // Call backend API
-      //when we are doing fetching data make sure no body, only headers should maintain
       const response = await axios.get(`${backendUrl}/api/doctor/list`, {
-        headers: { patientToken },
+        headers: { Authorization: `Bearer ${patientToken}` },
       });
-      // Return doctors list
-      // console.log("response_userSlice_getDoctorsData", response);
       return response.data.doctors;
     } catch (error) {
       console.error("Axios error:", error.response || error.message);
-      // throw error;
       toast.error(error.message);
     }
   }
@@ -101,7 +93,6 @@ const user = createSlice({
   initialState,
   reducers: {
     setPatientToken: (state, action) => {
-      // console.log("setPatientToken_user_slice", action);
       state.patientToken = action.payload;
     },
     logout: (state) => {
@@ -120,7 +111,6 @@ const user = createSlice({
       .addCase(getUserProfile.fulfilled, (state, action) => {
         state.loading = false;
         if (action.payload.success) {
-          // console.log("getUserProfile", action.payload);
           state.userProfileData = action.payload.userProfileData;
         }
       })
